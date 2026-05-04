@@ -1,0 +1,30 @@
+{
+  "name": "basic-smoke-pack",
+  "version": "1.0.0",
+  "description": "Deterministic fixture pack for qasmoke smoke tests.",
+  "provenance": {
+    "generatedBy": "hand-authored",
+    "generatedAt": "2026-05-04T08:30:00.000Z",
+    "source": "qasmoke MVP fixtures",
+    "notes": "Used for local CLI smoke tests only."
+  },
+  "cases": [
+    {
+      "id": "capital-france",
+      "prompt": "What is the capital of France?",
+      "expected": "Paris",
+      "tags": ["geo", "easy"],
+      "threshold": 1
+    },
+    {
+      "id": "binary-answer",
+      "prompt": "Reply with the word yes.",
+      "expected": ["yes", "Yes"],
+      "tags": ["control"],
+      "threshold": 1,
+      "metadata": {
+        "fixtureOutput": "yes"
+      }
+    }
+  ]
+}
