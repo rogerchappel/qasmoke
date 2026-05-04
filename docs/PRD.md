@@ -1,0 +1,32 @@
+# qasmoke PRD
+
+## Summary
+qasmoke is a local-first micro QA benchmark harness for ultra-fast regression smoke tests. It gives developers and agents a deterministic way to validate prompt/model behavior against tiny gold fixture packs before wider evals or releases.
+
+## Goals
+- Run tiny QA regression packs in seconds in local dev and CI.
+- Keep V1 deterministic and reviewable with no hidden network behavior.
+- Support provenance-aware synthetic fixture generation.
+- Ship a CLI and library usable by humans and agents.
+
+## Non-goals
+- Hosted eval dashboards.
+- Provider credential management.
+- Large-scale benchmark orchestration.
+
+## Users
+- OSS maintainers checking prompt/model regressions.
+- Agent builders who need a tiny gating smoke suite.
+- Developers who want a dead-simple local benchmark harness.
+
+## V1 Requirements
+- Fixture pack format stored as JSON.
+- Deterministic fixture provider for smoke and CI verification.
+- `run`, `inspect`, and `generate` CLI commands.
+- JSON reporting with pass/fail summary and per-case scoring.
+- Fixture provenance recorded in packs and surfaced in reports.
+
+## Success Criteria
+- `qasmoke run fixtures/basic --provider fixture` passes locally.
+- CLI can inspect a pack and generate a synthetic starter pack.
+- Tests cover parsing, scoring, running, and generation.

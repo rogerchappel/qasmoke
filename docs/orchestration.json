@@ -1,0 +1,19 @@
+{
+  "name": "qasmoke",
+  "workflow": [
+    "inspect-fixture-pack",
+    "run-deterministic-smoke",
+    "review-json-report",
+    "promote-or-fail-build"
+  ],
+  "commands": {
+    "inspect": "qasmoke inspect fixtures/basic",
+    "run": "qasmoke run fixtures/basic --provider fixture --output .tmp/report.json",
+    "generate": "qasmoke generate fixtures/prompts.txt --name generated-smoke --out .tmp/generated"
+  },
+  "safety": {
+    "network": false,
+    "telemetry": false,
+    "requiresSecrets": false
+  }
+}
