@@ -1,0 +1,50 @@
+{
+  "name": "qasmoke",
+  "version": "0.1.0",
+  "description": "Tiny fixture-driven QA smoke tests for LLM and prompt regressions.",
+  "type": "module",
+  "bin": {
+    "qasmoke": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test",
+    "smoke": "bash scripts/smoke.sh",
+    "fixture:smoke": "node dist/cli.js run fixtures/basic --provider fixture --output .tmp/smoke-report.json",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "qa",
+    "smoke-test",
+    "llm",
+    "regression",
+    "fixtures",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "Roger Chappel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rogerchappel/qasmoke.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rogerchappel/qasmoke/issues"
+  },
+  "homepage": "https://github.com/rogerchappel/qasmoke#readme",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
+  }
+}
