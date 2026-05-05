@@ -20,7 +20,8 @@
     "test": "node --test",
     "smoke": "bash scripts/smoke.sh",
     "fixture:smoke": "node dist/cli.js run fixtures/basic --provider fixture --output .tmp/smoke-report.json",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "release:check": "npm run check && npm run build && npm test && npm run smoke && npm pack --dry-run"
   },
   "keywords": [
     "qa",
