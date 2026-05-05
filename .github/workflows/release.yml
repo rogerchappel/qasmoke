@@ -31,7 +31,7 @@ jobs:
         run: |
           if ! npm run --silent release:notes --if-present -- . > RELEASE_NOTES.md || [ ! -s RELEASE_NOTES.md ]; then
             echo "## Changes" > RELEASE_NOTES.md
-            git log --oneline $(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo HEAD~20)..HEAD >> RELEASE_NOTES.md
+            git log --oneline --max-count=20 >> RELEASE_NOTES.md
           fi
       - name: Create GitHub release
         env:
