@@ -23,3 +23,12 @@ bash scripts/validate.sh
 ## Pull requests
 
 Small, reviewable PRs are ideal. If behavior changes, update fixtures, tests, and README examples together.
+
+## Fixture changes
+
+When adding or changing a fixture pack:
+
+1. Give every case a stable, unique `id`.
+2. Pick the narrowest matcher that reflects the intended behavior.
+3. Include a negative or edge-case fixture when the change affects failure handling.
+4. Run `bash scripts/validate.sh` before opening the PR.
