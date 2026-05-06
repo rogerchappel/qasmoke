@@ -30,3 +30,9 @@ qasmoke is a local-first micro QA benchmark harness for ultra-fast regression sm
 - `qasmoke run fixtures/basic --provider fixture` passes locally.
 - CLI can inspect a pack and generate a synthetic starter pack.
 - Tests cover parsing, scoring, running, and generation.
+
+## V1 Quality Bar
+- Reports expose matcher, threshold, score, pass/fail, and provenance for traceable regressions.
+- CLI supports machine-readable JSON, JSONL for log pipelines, and compact summaries for CI annotations.
+- Fixture validation rejects duplicate case IDs and unsupported matchers before running a suite.
+- Negative fixtures verify that failures produce non-zero exits, not just pretty reports.
