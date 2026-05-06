@@ -24,6 +24,7 @@ export async function runSuite(options: {
       prompt: testCase.prompt,
       output: result.output,
       matchedExpected: scored.matchedExpected,
+      matcher: testCase.matcher ?? 'contains',
       score: scored.score,
       threshold: caseThreshold,
       tags: testCase.tags ?? []
