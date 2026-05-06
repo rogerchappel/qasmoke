@@ -69,3 +69,11 @@ test('formatters produce compact CI-friendly output', async () => {
   assert.equal(lines.length, 2);
   assert.equal(JSON.parse(lines[0]).provider, 'fixture');
 });
+
+
+test('runSuite reports fixture-backed failures', async () => {
+  const report = await runSuite({ fixturePath: 'fixtures/failing', provider: createFixtureProvider() });
+  assert.equal(report.pass, false);
+  assert.equal(report.failed, 1);
+  assert.equal(report.cases[0].output, 'Lyon');
+});
