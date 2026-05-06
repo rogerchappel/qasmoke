@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { loadFixturePack, runSuite, scoreCase, generatePack, createFixtureProvider } from '../dist/index.js';
+import { loadFixturePack, runSuite, scoreCase, generatePack, createFixtureProvider, formatSummary, formatJsonLines } from '../dist/index.js';
 import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -59,4 +59,13 @@ test('scoreCase supports regex matchers', () => {
   const result = scoreCase({ id: 'regex', prompt: 'p', expected: 'build\\s+passed', matcher: 'regex' }, 'Build PASSED in 2s');
   assert.equal(result.score, 1);
   assert.equal(result.matchedExpected, 'build\\s+passed');
+});
+
+
+test('formatters produce compact CI-friendly output', async () => {
+  const report = await runSuite({ fixturePath: 'fixtures/basic', provider: createFixtureProvider() });
+  assert.match(formatSummary(report), /^PASS basic-smoke-pack/);
+  const lines = formatJsonLines(report).split('\n');
+  assert.equal(lines.length, 2);
+  assert.equal(JSON.parse(lines[0]).provider, 'fixture');
 });
