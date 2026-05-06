@@ -37,6 +37,7 @@ npm install
 npm run build
 node dist/cli.js inspect fixtures/basic
 node dist/cli.js run fixtures/basic --provider fixture --output .tmp/report.json
+node dist/cli.js run fixtures/basic --provider fixture --format summary
 node dist/cli.js generate fixtures/prompts.txt --name starter-pack --out .tmp/generated
 ```
 
@@ -72,11 +73,21 @@ Each pack lives in `pack.json`:
     {
       "id": "capital-france",
       "prompt": "What is the capital of France?",
-      "expected": "Paris"
+      "expected": "Paris",
+      "matcher": "contains",
+      "threshold": 0.9
     }
   ]
 }
 ```
+
+## Matchers
+
+- `contains` (default): full credit for exact normalized output, 0.9 for containing the expected answer
+- `exact`: normalized output must equal the expected answer
+- `regex`: expected value is evaluated as a case-insensitive JavaScript regular expression
+
+Use the deterministic `fixture` provider in CI when you want to verify fixture wiring and report behavior without any model or network dependency.
 
 ## Library use
 
