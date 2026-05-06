@@ -2,6 +2,7 @@ export type FixtureCase = {
   id: string;
   prompt: string;
   expected: string | string[];
+  matcher?: 'exact' | 'contains' | 'regex';
   tags?: string[];
   threshold?: number;
   metadata?: Record<string, string | number | boolean>;
@@ -36,6 +37,7 @@ export type CaseReport = {
   prompt: string;
   output: string;
   matchedExpected: string | null;
+  matcher: NonNullable<FixtureCase['matcher']>;
   score: number;
   threshold: number;
   tags: string[];
