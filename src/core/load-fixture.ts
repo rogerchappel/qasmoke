@@ -13,9 +13,17 @@ export async function loadFixturePack(inputPath: string): Promise<FixturePack> {
     throw new Error(`Invalid fixture pack at ${filePath}`);
   }
 
+  const ids = new Set<string>();
   for (const testCase of parsed.cases) {
     if (!testCase.id || !testCase.prompt || !testCase.expected) {
       throw new Error(`Fixture case is missing required fields in ${filePath}`);
+    }
+    if (ids.has(testCase.id)) {
+      throw new Error(`Duplicate fixture case id '${testCase.id}' in ${filePath}`);
+    }
+    ids.add(testCase.id);
+    if (testCase.matcher && !['exact', 'contains', 'regex'].includes(testCase.matcher)) {
+      throw new Error(`Unsupported matcher '${testCase.matcher}' for fixture case '${testCase.id}' in ${filePath}`);
     }
   }
 
