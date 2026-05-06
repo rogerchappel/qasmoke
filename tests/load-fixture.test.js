@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadFixturePack, runSuite, scoreCase, generatePack, createFixtureProvider } from '../dist/index.js';
-import { mkdtemp, readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -39,4 +39,24 @@ test('generatePack writes a synthetic pack with provenance', async () => {
   assert.equal(parsed.name, 'generated-pack');
   assert.equal(parsed.cases[0].expected, 'TODO: expected answer for What is 2+2?');
   assert.equal(parsed.provenance.source, 'test suite');
+});
+
+
+test('loadFixturePack rejects duplicate case ids', async () => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-invalid-'));
+  await writeFile(path.join(tempDir, 'pack.json'), JSON.stringify({
+    name: 'invalid',
+    version: '1.0.0',
+    cases: [
+      { id: 'same', prompt: 'one', expected: 'one' },
+      { id: 'same', prompt: 'two', expected: 'two' }
+    ]
+  }));
+  await assert.rejects(() => loadFixturePack(tempDir), /Duplicate fixture case id/);
+});
+
+test('scoreCase supports regex matchers', () => {
+  const result = scoreCase({ id: 'regex', prompt: 'p', expected: 'build\\s+passed', matcher: 'regex' }, 'Build PASSED in 2s');
+  assert.equal(result.score, 1);
+  assert.equal(result.matchedExpected, 'build\\s+passed');
 });
