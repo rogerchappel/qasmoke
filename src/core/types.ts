@@ -43,6 +43,15 @@ export type CaseReport = {
   tags: string[];
 };
 
+export type RegressionReport = {
+  baselinePath: string;
+  baselineScore: number;
+  currentScore: number;
+  scoreDelta: number;
+  allowedDrop: number;
+  pass: boolean;
+};
+
 export type SuiteReport = {
   suiteName: string;
   provider: string;
@@ -50,9 +59,11 @@ export type SuiteReport = {
   passed: number;
   failed: number;
   score: number;
-  threshold: number;
+  caseThreshold: number;
+  suiteThreshold: number;
   pass: boolean;
   generatedAt: string;
   cases: CaseReport[];
+  regression?: RegressionReport;
   provenance?: FixturePack['provenance'];
 };
