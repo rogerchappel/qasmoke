@@ -31,6 +31,8 @@
     "smoke-test",
     "llm",
     "regression",
+    "regression-testing",
+    "benchmark",
     "fixtures",
     "cli",
     "evals",

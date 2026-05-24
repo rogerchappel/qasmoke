@@ -12,7 +12,7 @@ When you're iterating on prompts, lightweight agents, or adapter glue, full eval
 
 - tiny gold fixture packs
 - deterministic smoke runs for CI
-- JSON reports that are easy to diff
+- JSON reports with case, suite, and baseline regression thresholds
 - synthetic pack generation with provenance
 - zero hidden network calls
 
@@ -38,6 +38,7 @@ npm run build
 node dist/cli.js inspect fixtures/basic
 node dist/cli.js run fixtures/basic --provider fixture --output .tmp/report.json
 node dist/cli.js run fixtures/basic --provider fixture --format summary
+node dist/cli.js run fixtures/format --provider fixture --baseline .tmp/report.json --max-score-drop 0
 node dist/cli.js generate fixtures/prompts.txt --name starter-pack --out .tmp/generated
 ```
 
@@ -52,7 +53,13 @@ qasmoke inspect fixtures/basic
 ### Run a deterministic smoke suite
 
 ```bash
-qasmoke run fixtures/basic --provider fixture --output .tmp/report.json
+qasmoke run fixtures/basic --provider fixture --output .tmp/report.json --case-threshold 1 --suite-threshold 1
+```
+
+Compare a run against a previous JSON report:
+
+```bash
+qasmoke run fixtures/basic --provider fixture --baseline .tmp/report.json --max-score-drop 0
 ```
 
 ### Generate a synthetic starter pack
@@ -89,6 +96,23 @@ Each pack lives in `pack.json`:
 
 Use the deterministic `fixture` provider in CI when you want to verify fixture wiring and report behavior without any model or network dependency.
 
+V1 ships two deterministic packs:
+
+- `fixtures/basic` covers short factual/control examples.
+- `fixtures/format` covers strict formatting examples.
+
+Case-level thresholds use a `0..1` score. Exact normalized matches score `1`, contains matches score `0.9`, and misses score `0`.
+
+## Reports
+
+`qasmoke run` emits a JSON report with:
+
+- suite summary: `total`, `passed`, `failed`, `score`, `pass`
+- threshold settings: `caseThreshold`, `suiteThreshold`
+- per-case outputs and matched expected values
+- optional `regression` block when `--baseline` is supplied
+- fixture provenance copied from the pack
+
 ## Library use
 
 ```ts
@@ -109,6 +133,10 @@ console.log(report.pass);
 - no hidden network calls
 - no credential scraping
 - generated packs are drafts until you review expected answers
+
+## Attribution
+
+qasmoke was inspired by the public existence and activity signal of [`tiny_qa_benchmark_pp`](https://github.com/vincentkoc/tiny_qa_benchmark_pp). This project intentionally uses a different name, implementation, TypeScript CLI/library shape, fixture format, and local-first V1 scope.
 
 ## Verification
 

@@ -5,6 +5,7 @@
 - [x] Implement `run` command with JSON report output.
 - [x] Implement `inspect` command for quick pack summaries.
 - [x] Implement `generate` command with provenance-aware synthetic output.
+- [x] Add suite and baseline regression threshold reporting.
 - [x] Add fixture-backed unit tests and CLI smoke script.
 - [x] Add compact summary and JSONL output formats.
 - [x] Add duplicate ID and matcher validation.

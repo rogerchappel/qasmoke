@@ -19,6 +19,7 @@ bash scripts/validate.sh
 - Prefer fixture-backed tests over mock-heavy abstractions.
 - Preserve the local-first safety model.
 - Make provider integrations explicit, never automatic.
+- Keep external inspiration attribution in docs without copying upstream implementation details.
 
 ## Pull requests
 
