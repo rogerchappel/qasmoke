@@ -8,7 +8,11 @@ function scoreExpected(testCase: FixtureCase, output: string, expected: string):
   const matcher = testCase.matcher ?? 'contains';
 
   if (matcher === 'regex') {
-    return new RegExp(expected, 'i').test(output) ? 1 : 0;
+    try {
+      return new RegExp(expected, 'i').test(output) ? 1 : 0;
+    } catch (error) {
+      throw new Error(`Invalid regex matcher for case "${testCase.id}": ${(error as Error).message}`);
+    }
   }
 
   const normalizedOutput = normalize(output);

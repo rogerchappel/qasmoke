@@ -123,6 +123,13 @@ test('scoreCase supports regex matchers', () => {
   assert.equal(result.matchedExpected, 'build\\s+passed');
 });
 
+test('scoreCase reports the fixture id for invalid regex matchers', () => {
+  assert.throws(
+    () => scoreCase({ id: 'broken-regex', prompt: 'p', expected: '[unterminated', matcher: 'regex' }, 'anything'),
+    /Invalid regex matcher for case "broken-regex"/
+  );
+});
+
 
 test('formatters produce compact CI-friendly output', async () => {
   const report = await runSuite({ fixturePath: 'fixtures/basic', provider: createFixtureProvider() });
