@@ -99,7 +99,7 @@ test('generatePack writes a synthetic pack with provenance', async () => {
   const raw = await readFile(result.path, 'utf8');
   const parsed = JSON.parse(raw);
   assert.equal(parsed.name, 'generated-pack');
-  assert.equal(parsed.cases[0].expected, 'TODO: expected answer for What is 2+2?');
+  assert.equal(parsed.cases[0].expected, 'REVIEW_REQUIRED: expected answer for What is 2+2?');
   assert.equal(parsed.provenance.source, 'test suite');
 });
 
