@@ -113,6 +113,19 @@ Case-level thresholds use a `0..1` score. Exact normalized matches score `1`, co
 - optional `regression` block when `--baseline` is supplied
 - fixture provenance copied from the pack
 
+## Release Verification
+
+```bash
+npm run check
+npm run build
+npm test
+npm run smoke
+npm run package:smoke
+npm run release:check
+```
+
+The npm package includes `dist`, `fixtures`, `docs`, and maintainer policy files so the published quickstart can inspect and run the bundled deterministic packs.
+
 ## Library use
 
 ```ts
