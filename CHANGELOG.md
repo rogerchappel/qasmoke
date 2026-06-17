@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added release-readiness validation for package metadata, CI placeholder cleanup, and package smoke coverage.
 ### Added
 
 - Fixture-driven CLI smoke checks for inspect, run, summary, JSONL, baseline regression, generated packs, and expected failure cases.
