@@ -176,3 +176,14 @@ Tiny fixture-driven QA smoke tests for LLM and prompt regressions.
 ## Suggested topics
 
 `llm`, `qa`, `smoke-test`, `regression-testing`, `fixtures`, `cli`, `typescript`, `evals`
+
+## Release readiness
+
+Run the same checks that CI uses before opening a release PR:
+
+```sh
+npm run release:readiness
+npm run release:check
+```
+
+`release:readiness` validates repository metadata, the package files allowlist, package smoke coverage, and CI placeholder cleanup. `release:check` runs the project build, test, smoke, and package dry-run checks where configured.
