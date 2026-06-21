@@ -42,6 +42,12 @@ node dist/cli.js run fixtures/format --provider fixture --baseline .tmp/report.j
 node dist/cli.js generate fixtures/prompts.txt --name starter-pack --out .tmp/generated
 ```
 
+To run a disposable fixture gate demo with summary and JSONL outputs:
+
+```bash
+bash demo/run-fixture-gate.sh
+```
+
 ## CLI
 
 ### Inspect a fixture pack
