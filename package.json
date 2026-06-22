@@ -28,7 +28,7 @@
     "release:check": "npm run check && npm run build && npm test && npm run smoke && npm run package:smoke",
     "smoke:fixture": "node dist/cli.js run fixtures/basic --provider fixture --format summary",
     "smoke:failure": "node dist/cli.js run fixtures/failing --provider fixture --format summary",
-    "package:smoke": "npm pack --dry-run",
+    "package:smoke": "node scripts/package-smoke.mjs",
     "release:readiness": "node scripts/validate-release-readiness.mjs"
   },
   "keywords": [
