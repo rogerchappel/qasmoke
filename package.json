@@ -10,8 +10,9 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "fixtures",
+    "demo",
     "docs",
+    "fixtures",
     "README.md",
     "LICENSE",
     "SECURITY.md",
