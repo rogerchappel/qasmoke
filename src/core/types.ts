@@ -2,6 +2,7 @@ export type FixtureCase = {
   id: string;
   prompt: string;
   expected: string | string[];
+  matcher?: 'exact' | 'contains' | 'regex';
   tags?: string[];
   threshold?: number;
   metadata?: Record<string, string | number | boolean>;
@@ -36,9 +37,19 @@ export type CaseReport = {
   prompt: string;
   output: string;
   matchedExpected: string | null;
+  matcher: NonNullable<FixtureCase['matcher']>;
   score: number;
   threshold: number;
   tags: string[];
+};
+
+export type RegressionReport = {
+  baselinePath: string;
+  baselineScore: number;
+  currentScore: number;
+  scoreDelta: number;
+  allowedDrop: number;
+  pass: boolean;
 };
 
 export type SuiteReport = {
@@ -48,9 +59,11 @@ export type SuiteReport = {
   passed: number;
   failed: number;
   score: number;
-  threshold: number;
+  caseThreshold: number;
+  suiteThreshold: number;
   pass: boolean;
   generatedAt: string;
   cases: CaseReport[];
+  regression?: RegressionReport;
   provenance?: FixturePack['provenance'];
 };

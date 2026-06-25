@@ -1,0 +1,22 @@
+{
+  "name": "failing-smoke-pack",
+  "version": "1.0.0",
+  "description": "Fixture pack that intentionally fails for regression smoke tests.",
+  "cases": [
+    {
+      "id": "wrong-capital",
+      "prompt": "What is the capital of France?",
+      "expected": "Paris",
+      "matcher": "exact",
+      "metadata": {
+        "fixtureOutput": "Lyon"
+      },
+      "tags": ["negative"]
+    }
+  ],
+  "provenance": {
+    "generatedBy": "human",
+    "source": "qasmoke repository",
+    "notes": "Used to verify non-zero CLI exits and failed reports."
+  }
+}

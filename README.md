@@ -12,7 +12,7 @@ When you're iterating on prompts, lightweight agents, or adapter glue, full eval
 
 - tiny gold fixture packs
 - deterministic smoke runs for CI
-- JSON reports that are easy to diff
+- JSON reports with case, suite, and baseline regression thresholds
 - synthetic pack generation with provenance
 - zero hidden network calls
 
@@ -37,6 +37,8 @@ npm install
 npm run build
 node dist/cli.js inspect fixtures/basic
 node dist/cli.js run fixtures/basic --provider fixture --output .tmp/report.json
+node dist/cli.js run fixtures/basic --provider fixture --format summary
+node dist/cli.js run fixtures/format --provider fixture --baseline .tmp/report.json --max-score-drop 0
 node dist/cli.js generate fixtures/prompts.txt --name starter-pack --out .tmp/generated
 ```
 
@@ -47,6 +49,12 @@ bash demo/run-basic-fixture.sh
 ```
 
 See [Prompt Regression Smoke Demo](docs/tutorials/prompt-regression-smoke.md) for the walkthrough. Promotion drafts live in [docs/promo/video-brief.md](docs/promo/video-brief.md) and [docs/promo/social-hooks.md](docs/promo/social-hooks.md).
+
+To run a disposable fixture gate demo with summary and JSONL outputs:
+
+```bash
+bash demo/run-fixture-gate.sh
+```
 
 ## CLI
 
@@ -59,7 +67,13 @@ qasmoke inspect fixtures/basic
 ### Run a deterministic smoke suite
 
 ```bash
-qasmoke run fixtures/basic --provider fixture --output .tmp/report.json
+qasmoke run fixtures/basic --provider fixture --output .tmp/report.json --case-threshold 1 --suite-threshold 1
+```
+
+Compare a run against a previous JSON report:
+
+```bash
+qasmoke run fixtures/basic --provider fixture --baseline .tmp/report.json --max-score-drop 0
 ```
 
 ### Generate a synthetic starter pack
@@ -80,11 +94,51 @@ Each pack lives in `pack.json`:
     {
       "id": "capital-france",
       "prompt": "What is the capital of France?",
-      "expected": "Paris"
+      "expected": "Paris",
+      "matcher": "contains",
+      "threshold": 0.9
     }
   ]
 }
 ```
+
+## Matchers
+
+- `contains` (default): full credit for exact normalized output, 0.9 for containing the expected answer
+- `exact`: normalized output must equal the expected answer
+- `regex`: expected value is evaluated as a case-insensitive JavaScript regular expression
+
+Use the deterministic `fixture` provider in CI when you want to verify fixture wiring and report behavior without any model or network dependency.
+
+V1 ships two deterministic packs:
+
+- `fixtures/basic` covers short factual/control examples.
+- `fixtures/format` covers strict formatting examples.
+
+Case-level thresholds use a `0..1` score. Exact normalized matches score `1`, contains matches score `0.9`, and misses score `0`.
+
+## Reports
+
+`qasmoke run` emits a JSON report with:
+
+- suite summary: `total`, `passed`, `failed`, `score`, `pass`
+- threshold settings: `caseThreshold`, `suiteThreshold`
+- per-case outputs and matched expected values
+- optional `regression` block when `--baseline` is supplied
+- fixture provenance copied from the pack
+
+## Release Verification
+
+```bash
+npm run check
+npm run build
+npm test
+npm run smoke
+npm run package:smoke
+npm run release:check
+```
+
+The npm package includes `dist`, `fixtures`, `docs`, and maintainer policy files so the published quickstart can inspect and run the bundled deterministic packs.
 
 ## Library use
 
@@ -107,6 +161,10 @@ console.log(report.pass);
 - no credential scraping
 - generated packs are drafts until you review expected answers
 
+## Attribution
+
+qasmoke was inspired by the public existence and activity signal of [`tiny_qa_benchmark_pp`](https://github.com/vincentkoc/tiny_qa_benchmark_pp). This project intentionally uses a different name, implementation, TypeScript CLI/library shape, fixture format, and local-first V1 scope.
+
 ## Verification
 
 ```bash
@@ -115,6 +173,8 @@ npm run check
 npm run build
 npm run smoke
 bash demo/run-basic-fixture.sh
+npm run package:smoke
+npm run release:check
 bash scripts/validate.sh
 ```
 
@@ -131,3 +191,14 @@ Tiny fixture-driven QA smoke tests for LLM and prompt regressions.
 ## Suggested topics
 
 `llm`, `qa`, `smoke-test`, `regression-testing`, `fixtures`, `cli`, `typescript`, `evals`
+
+## Release readiness
+
+Run the same checks that CI uses before opening a release PR:
+
+```sh
+npm run release:readiness
+npm run release:check
+```
+
+`release:readiness` validates repository metadata, the package files allowlist, package smoke coverage, and CI placeholder cleanup. `release:check` runs the project build, test, smoke, and package dry-run checks where configured.

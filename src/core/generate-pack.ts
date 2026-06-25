@@ -21,7 +21,7 @@ export async function generatePack(options: {
     cases: options.prompts.map((prompt, index) => ({
       id: `case-${index + 1}`,
       prompt,
-      expected: `TODO: expected answer for ${prompt}`,
+      expected: `REVIEW_REQUIRED: expected answer for ${prompt}`,
       threshold: 1,
       tags: ['synthetic']
     }))

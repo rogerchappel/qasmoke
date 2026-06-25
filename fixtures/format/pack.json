@@ -1,0 +1,30 @@
+{
+  "name": "format-smoke-pack",
+  "version": "1.0.0",
+  "description": "Deterministic format-control pack for qasmoke local smoke tests.",
+  "provenance": {
+    "generatedBy": "hand-authored",
+    "generatedAt": "2026-05-25T00:00:00.000Z",
+    "source": "qasmoke deterministic fixture pack",
+    "notes": "Covers short formatting and casing checks without external calls."
+  },
+  "cases": [
+    {
+      "id": "json-boolean",
+      "prompt": "Return only JSON with ok set to true.",
+      "expected": "{\"ok\":true}",
+      "tags": ["format", "json"],
+      "threshold": 1
+    },
+    {
+      "id": "lowercase-token",
+      "prompt": "Return only the lowercase token ready.",
+      "expected": "ready",
+      "tags": ["format", "control"],
+      "threshold": 1,
+      "metadata": {
+        "fixtureOutput": "ready"
+      }
+    }
+  ]
+}
