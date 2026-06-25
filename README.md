@@ -40,6 +40,14 @@ node dist/cli.js run fixtures/basic --provider fixture --output .tmp/report.json
 node dist/cli.js generate fixtures/prompts.txt --name starter-pack --out .tmp/generated
 ```
 
+For a fixture-backed demo that verifies the inspect, run, and generate flow:
+
+```bash
+bash demo/run-basic-fixture.sh
+```
+
+See [Prompt Regression Smoke Demo](docs/tutorials/prompt-regression-smoke.md) for the walkthrough. Promotion drafts live in [docs/promo/video-brief.md](docs/promo/video-brief.md) and [docs/promo/social-hooks.md](docs/promo/social-hooks.md).
+
 ## CLI
 
 ### Inspect a fixture pack
@@ -106,6 +114,7 @@ npm test
 npm run check
 npm run build
 npm run smoke
+bash demo/run-basic-fixture.sh
 bash scripts/validate.sh
 ```
 
