@@ -56,6 +56,15 @@ To run a disposable fixture gate demo with summary and JSONL outputs:
 bash demo/run-fixture-gate.sh
 ```
 
+To rehearse a baseline comparison before wiring qasmoke into CI:
+
+```bash
+bash demo/baseline-regression-check.sh
+```
+
+The baseline walkthrough is documented in
+[docs/tutorials/baseline-regression-check.md](docs/tutorials/baseline-regression-check.md).
+
 ## CLI
 
 ### Inspect a fixture pack
