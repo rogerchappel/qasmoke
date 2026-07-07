@@ -32,10 +32,24 @@ else if (pkg.bin && typeof pkg.bin === 'object') Object.values(pkg.bin).forEach(
 addPath(pkg.main);
 addPath(pkg.types);
 walkExports(pkg.exports);
-const missing = [...expected].filter((file) => !included.has(file));
+const requiredReleaseFiles = [
+  'demo/run-basic-fixture.sh',
+  'demo/run-fixture-gate.sh',
+  'docs/tutorials/prompt-regression-smoke.md',
+  'docs/tutorials/baseline-regression-check.md',
+  'fixtures/basic/pack.json',
+  'fixtures/failing/pack.json',
+  'fixtures/format/pack.json',
+  'README.md',
+  'LICENSE',
+  'SECURITY.md',
+  'CHANGELOG.md',
+  'CONTRIBUTING.md'
+];
+const missing = [...expected, ...requiredReleaseFiles].filter((file) => !included.has(file));
 if (missing.length) {
-  console.error('Package tarball is missing declared entrypoints:');
+  console.error('Package tarball is missing release-candidate files:');
   for (const file of missing) console.error(`- ${file}`);
   process.exit(1);
 }
-console.log(`Package tarball includes ${expected.size} declared entrypoint(s).`);
+console.log(`Package tarball includes ${expected.size} declared entrypoint(s) and ${requiredReleaseFiles.length} release-candidate files.`);
