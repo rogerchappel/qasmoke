@@ -38,6 +38,7 @@ npm run build
 node dist/cli.js inspect fixtures/basic
 node dist/cli.js run fixtures/basic --provider fixture --output .tmp/report.json
 node dist/cli.js run fixtures/basic --provider fixture --format summary
+node dist/cli.js run fixtures/basic --provider fixture --format markdown
 node dist/cli.js run fixtures/format --provider fixture --baseline .tmp/report.json --max-score-drop 0
 node dist/cli.js generate fixtures/prompts.txt --name starter-pack --out .tmp/generated
 ```
@@ -135,6 +136,8 @@ Case-level thresholds use a `0..1` score. Exact normalized matches score `1`, co
 - per-case outputs and matched expected values
 - optional `regression` block when `--baseline` is supplied
 - fixture provenance copied from the pack
+
+Use `--format markdown` when an agent needs a paste-ready PR comment or release-candidate evidence block.
 
 ## Release Verification
 

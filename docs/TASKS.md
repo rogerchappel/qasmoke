@@ -16,5 +16,5 @@
 ## Post-MVP Candidates
 - [ ] Add real provider adapters beyond fixture provider.
 - [ ] Add richer scoring strategies and tolerance plugins.
-- [ ] Add markdown report output for PR comments.
+- [x] Add markdown report output for PR comments.
 - [ ] Add trend snapshots across report files.
