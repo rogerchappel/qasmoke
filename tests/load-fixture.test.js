@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { loadFixturePack, runSuite, scoreCase, generatePack, createFixtureProvider, formatSummary, formatJsonLines } from '../dist/index.js';
+import { loadFixturePack, runSuite, scoreCase, generatePack, createFixtureProvider, formatSummary, formatJsonLines, formatMarkdown } from '../dist/index.js';
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -137,6 +137,9 @@ test('formatters produce compact CI-friendly output', async () => {
   const lines = formatJsonLines(report).split('\n');
   assert.equal(lines.length, 2);
   assert.equal(JSON.parse(lines[0]).provider, 'fixture');
+  const markdown = formatMarkdown(report);
+  assert.match(markdown, /^# qasmoke Report: basic-smoke-pack/);
+  assert.match(markdown, /\| capital-france \| PASS \|/);
 });
 
 
