@@ -4,11 +4,11 @@ import path from 'node:path';
 import { createFixtureProvider } from './providers/fixture.js';
 import { runSuite } from './core/run-suite.js';
 import { generatePack } from './core/generate-pack.js';
-import { formatJsonLines, formatSummary } from './core/format-report.js';
+import { formatJsonLines, formatMarkdown, formatSummary } from './core/format-report.js';
 import { loadFixturePack } from './core/load-fixture.js';
 
 function printHelp(): void {
-  console.log(`qasmoke\n\nUsage:\n  qasmoke run <fixturePath> [--provider fixture] [--output report.json] [--threshold 1] [--case-threshold 1] [--suite-threshold 1] [--baseline report.json] [--max-score-drop 0] [--format json|summary|jsonl]\n  qasmoke inspect <fixturePath>\n  qasmoke generate <promptsFile> [--name smoke-pack] [--out fixtures/generated] [--source note]\n\nSafety:\n  - local-first only\n  - no hidden network calls\n  - fixture provider is deterministic for CI smoke checks\n`);
+  console.log(`qasmoke\n\nUsage:\n  qasmoke run <fixturePath> [--provider fixture] [--output report.json] [--threshold 1] [--case-threshold 1] [--suite-threshold 1] [--baseline report.json] [--max-score-drop 0] [--format json|summary|jsonl|markdown]\n  qasmoke inspect <fixturePath>\n  qasmoke generate <promptsFile> [--name smoke-pack] [--out fixtures/generated] [--source note]\n\nSafety:\n  - local-first only\n  - no hidden network calls\n  - fixture provider is deterministic for CI smoke checks\n`);
 }
 
 function parseFlag(args: string[], name: string, fallback?: string): string | undefined {
@@ -69,6 +69,8 @@ async function main(): Promise<void> {
       console.log(formatSummary(report));
     } else if (format === 'jsonl') {
       console.log(formatJsonLines(report));
+    } else if (format === 'markdown') {
+      console.log(formatMarkdown(report));
     } else if (format === 'json') {
       console.log(JSON.stringify(report, null, 2));
     } else {
