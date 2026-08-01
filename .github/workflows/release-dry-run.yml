@@ -26,6 +26,8 @@ jobs:
       - run: npm test
       - run: npm run smoke --if-present
       - run: npm pack --dry-run
+      - name: Validate release workflow contract
+        run: npm run release:readiness
       - name: Release notes preview
         run: |
           if npm run --silent release:notes --if-present -- . > release-notes-preview.md && [ -s release-notes-preview.md ]; then

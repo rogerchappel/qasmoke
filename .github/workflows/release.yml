@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing immutable release tag to recover
+        required: true
+        default: v0.1.0
 
 permissions:
   contents: write
@@ -15,10 +21,23 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          ref: ${{ inputs.tag || github.ref }}
+      - name: Verify immutable tag checkout and package version
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Invalid release tag: $RELEASE_TAG" >&2; exit 1; }
+          git fetch --force origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")" || { echo "Checkout does not match $RELEASE_TAG" >&2; exit 1; }
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          test "$RELEASE_TAG" = "v$PACKAGE_VERSION" || { echo "Tag $RELEASE_TAG does not match package version $PACKAGE_VERSION" >&2; exit 1; }
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -27,13 +46,29 @@ jobs:
       - run: npm ci
       - run: npm run release:check
       - run: npm pack
+      - name: Verify recovery release exists
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release view "$RELEASE_TAG" >/dev/null
+      - name: Publish package when absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          if npm view "qasmoke@$PACKAGE_VERSION" version >/dev/null 2>&1; then
+            echo "qasmoke@$PACKAGE_VERSION already exists; skipping npm publish."
+          else
+            npm publish --provenance --access public
+          fi
       - name: Generate release notes
+        if: github.event_name != 'workflow_dispatch'
         run: |
           if ! npm run --silent release:notes --if-present -- . > RELEASE_NOTES.md || [ ! -s RELEASE_NOTES.md ]; then
             echo "## Changes" > RELEASE_NOTES.md
             git log --oneline --max-count=20 >> RELEASE_NOTES.md
           fi
       - name: Create GitHub release
+        if: github.event_name != 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${GITHUB_REF_NAME}" --notes-file RELEASE_NOTES.md *.tgz
+        run: gh release create "$RELEASE_TAG" --verify-tag --notes-file RELEASE_NOTES.md ./*.tgz
