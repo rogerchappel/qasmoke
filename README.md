@@ -214,3 +214,15 @@ npm run release:check
 ```
 
 `release:readiness` validates repository metadata, the package files allowlist, package smoke coverage, and CI placeholder cleanup. `release:check` runs that readiness validator plus the project build, test, smoke, and package dry-run checks.
+
+### Publishing a release
+
+After `package.json` contains the intended version, create and push the matching
+`vX.Y.Z` tag. The Release workflow verifies that the immutable tag checkout and
+package version agree, runs `npm run release:check`, publishes to npm with
+provenance and public access, and creates the GitHub release.
+
+If npm publication failed after a GitHub release was created, run the Release
+workflow manually with that existing tag (for example `v0.1.0`). Recovery checks
+out and verifies the tag, requires its GitHub release to exist, publishes only
+when that exact npm version is absent, and never creates a second release.
