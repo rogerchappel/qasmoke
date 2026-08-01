@@ -28,6 +28,19 @@ if (fs.existsSync(workflowDir)) {
 
   const combined = workflowFiles.map((file) => fs.readFileSync(path.join(workflowDir, file), 'utf8')).join('\n');
   requireField(/release:check/.test(combined), 'CI workflows must run npm run release:check');
+
+  const releasePath = path.join(workflowDir, 'release.yml');
+  requireField(fs.existsSync(releasePath), 'repository must include .github/workflows/release.yml');
+  if (fs.existsSync(releasePath)) {
+    const release = fs.readFileSync(releasePath, 'utf8');
+    requireField(/workflow_dispatch:/.test(release), 'release workflow must provide workflow_dispatch recovery');
+    requireField(/git rev-parse HEAD/.test(release) && /refs\/tags\//.test(release), 'release workflow must verify the immutable tag checkout');
+    requireField(/Tag .* does not match package version/.test(release), 'release workflow must validate tag against package version');
+    requireField(/npm publish --provenance --access public/.test(release), 'release workflow must publish to npm with provenance and public access');
+    requireField(/npm view .*PACKAGE_VERSION/.test(release), 'release workflow must check whether the package version already exists');
+    requireField(/gh release view/.test(release), 'release recovery must verify the existing GitHub release');
+    requireField(/github\.event_name != 'workflow_dispatch'/.test(release), 'release recovery must not create a duplicate GitHub release');
+  }
 }
 
 if (failures.length > 0) {
