@@ -88,6 +88,40 @@ test('runSuite fails when regression exceeds the allowed drop', async () => {
   assert.equal(report.regression.pass, false);
 });
 
+test('runSuite passes a partial result that meets the suite threshold', async () => {
+  const report = await runSuite({
+    fixturePath: 'fixtures/basic',
+    provider: {
+      name: 'partial',
+      async runCase(testCase) {
+        return { output: testCase.id === 'capital-france' ? 'Paris' : 'wrong' };
+      }
+    },
+    suiteThreshold: 0.5
+  });
+
+  assert.equal(report.passed, 1);
+  assert.equal(report.score, 0.5);
+  assert.equal(report.pass, true);
+});
+
+test('runSuite fails a partial result below the suite threshold', async () => {
+  const report = await runSuite({
+    fixturePath: 'fixtures/basic',
+    provider: {
+      name: 'partial',
+      async runCase(testCase) {
+        return { output: testCase.id === 'capital-france' ? 'Paris' : 'wrong' };
+      }
+    },
+    suiteThreshold: 0.75
+  });
+
+  assert.equal(report.passed, 1);
+  assert.equal(report.score, 0.5);
+  assert.equal(report.pass, false);
+});
+
 test('generatePack writes a synthetic pack with provenance', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-'));
   const result = await generatePack({

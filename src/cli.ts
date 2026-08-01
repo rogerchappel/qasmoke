@@ -8,7 +8,7 @@ import { formatJsonLines, formatMarkdown, formatSummary } from './core/format-re
 import { loadFixturePack } from './core/load-fixture.js';
 
 function printHelp(): void {
-  console.log(`qasmoke\n\nUsage:\n  qasmoke run <fixturePath> [--provider fixture] [--output report.json] [--threshold 1] [--case-threshold 1] [--suite-threshold 1] [--baseline report.json] [--max-score-drop 0] [--format json|summary|jsonl|markdown]\n  qasmoke inspect <fixturePath>\n  qasmoke generate <promptsFile> [--name smoke-pack] [--out fixtures/generated] [--source note]\n\nSafety:\n  - local-first only\n  - no hidden network calls\n  - fixture provider is deterministic for CI smoke checks\n`);
+  console.log(`qasmoke\n\nUsage:\n  qasmoke run <fixturePath> [--provider fixture] [--output report.json] [--threshold 1] [--case-threshold 1] [--suite-threshold 1] [--baseline report.json] [--max-score-drop 0] [--format json|summary|jsonl|markdown]\n  qasmoke inspect <fixturePath>\n  qasmoke generate <promptsFile> [--name smoke-pack] [--out fixtures/generated] [--source note]\n\nThresholds:\n  --case-threshold   Minimum score for each case to count as passed (default: 1)\n  --suite-threshold  Minimum fraction of passed cases for the suite to pass (default: 1)\n\nSafety:\n  - local-first only\n  - no hidden network calls\n  - fixture provider is deterministic for CI smoke checks\n`);
 }
 
 function parseFlag(args: string[], name: string, fallback?: string): string | undefined {
