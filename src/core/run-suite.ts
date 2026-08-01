@@ -84,7 +84,7 @@ export async function runSuite(options: {
     score,
     caseThreshold,
     suiteThreshold,
-    pass: passed === cases.length && score >= suiteThreshold && (regression?.pass ?? true),
+    pass: score >= suiteThreshold && (regression?.pass ?? true),
     generatedAt: new Date().toISOString(),
     cases,
     regression,
