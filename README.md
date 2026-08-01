@@ -80,6 +80,11 @@ qasmoke inspect fixtures/basic
 qasmoke run fixtures/basic --provider fixture --output .tmp/report.json --case-threshold 1 --suite-threshold 1
 ```
 
+`--case-threshold` controls the score each case must meet to count as passed.
+`--suite-threshold` controls the fraction of passed cases the suite must meet; for
+example, `--suite-threshold 0.8` permits up to 20% of cases to fail. Baseline
+regression checks must also pass when configured.
+
 Compare a run against a previous JSON report:
 
 ```bash
