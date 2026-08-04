@@ -11,15 +11,22 @@ test('loadFixturePack reads a pack directory', async () => {
   assert.equal(pack.cases.length, 2);
 });
 
-test('loadFixturePack validates case thresholds', async () => {
-  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-invalid-'));
-  await writeFile(path.join(tempDir, 'pack.json'), JSON.stringify({
-    name: 'invalid-pack',
-    version: '1.0.0',
-    cases: [{ id: 'bad-threshold', prompt: 'p', expected: 'x', threshold: 2 }]
-  }), 'utf8');
+test('loadFixturePack accepts threshold boundaries and rejects invalid thresholds', async () => {
+  for (const threshold of [0, 1]) {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-valid-'));
+    await writeFile(path.join(tempDir, 'pack.json'), JSON.stringify({
+      name: 'valid-pack', version: '1.0.0', cases: [{ id: 'boundary', prompt: 'p', expected: 'x', threshold }]
+    }), 'utf8');
+    assert.equal((await loadFixturePack(tempDir)).cases[0].threshold, threshold);
+  }
 
-  await assert.rejects(() => loadFixturePack(tempDir), /threshold must be between 0 and 1/);
+  for (const threshold of [-0.1, 1.1, '0.5', null]) {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-invalid-'));
+    await writeFile(path.join(tempDir, 'pack.json'), JSON.stringify({
+      name: 'invalid-pack', version: '1.0.0', cases: [{ id: 'bad-threshold', prompt: 'p', expected: 'x', threshold }]
+    }), 'utf8');
+    await assert.rejects(() => loadFixturePack(tempDir), /threshold must be a finite number between 0 and 1/);
+  }
 });
 
 test('scoreCase gives full credit for exact matches', () => {
