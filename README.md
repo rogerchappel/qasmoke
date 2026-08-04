@@ -85,6 +85,11 @@ qasmoke run fixtures/basic --provider fixture --output .tmp/report.json --case-t
 example, `--suite-threshold 0.8` permits up to 20% of cases to fail. Baseline
 regression checks must also pass when configured.
 
+Thresholds must be finite numbers from `0` through `1`. Invalid fixture values or
+CLI usage (including unknown, duplicate, conflicting, or value-less options) are
+rejected before a suite or generator runs. Usage errors and failed suites exit
+with a nonzero status and print a diagnostic to stderr.
+
 Compare a run against a previous JSON report:
 
 ```bash

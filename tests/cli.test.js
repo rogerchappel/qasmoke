@@ -26,3 +26,29 @@ test('run exit status follows the suite threshold result', async () => {
   assert.equal(report.pass, true);
   assert.equal(result.status, 0);
 });
+
+const invalidInvocations = [
+  ['run', 'fixtures/basic', '--format'],
+  ['run', 'fixtures/basic', '--provider'],
+  ['run', 'fixtures/basic', '--output'],
+  ['run', 'fixtures/basic', '--threshold'],
+  ['run', 'fixtures/basic', '--case-threshold'],
+  ['run', 'fixtures/basic', '--suite-threshold'],
+  ['run', 'fixtures/basic', '--baseline'],
+  ['run', 'fixtures/basic', '--max-score-drop'],
+  ['generate', 'fixtures/prompts.txt', '--name'],
+  ['generate', 'fixtures/prompts.txt', '--out'],
+  ['generate', 'fixtures/prompts.txt', '--source'],
+  ['run', 'fixtures/basic', '--bogus', 'value'],
+  ['inspect', 'fixtures/basic', 'extra'],
+  ['run', 'fixtures/basic', '--format', 'json', '--format', 'summary'],
+  ['run', 'fixtures/basic', '--threshold', '1', '--case-threshold', '1']
+];
+
+test('invalid CLI usage fails before command side effects', () => {
+  for (const args of invalidInvocations) {
+    const result = spawnSync(process.execPath, ['dist/cli.js', ...args], { encoding: 'utf8' });
+    assert.notEqual(result.status, 0, args.join(' '));
+    assert.match(result.stderr, /^qasmoke error: /, args.join(' '));
+  }
+});

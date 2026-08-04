@@ -39,8 +39,9 @@ export async function loadFixturePack(inputPath: string): Promise<FixturePack> {
       throw new Error(`Unsupported matcher '${testCase.matcher}' for fixture case '${testCase.id}' in ${filePath}`);
     }
 
-    if (typeof testCase.threshold === 'number' && (testCase.threshold < 0 || testCase.threshold > 1)) {
-      throw new Error(`Fixture case "${testCase.id}" threshold must be between 0 and 1 in ${filePath}`);
+    if (testCase.threshold !== undefined &&
+      (typeof testCase.threshold !== 'number' || !Number.isFinite(testCase.threshold) || testCase.threshold < 0 || testCase.threshold > 1)) {
+      throw new Error(`Fixture case "${testCase.id}" threshold must be a finite number between 0 and 1 in ${filePath}`);
     }
   }
 
