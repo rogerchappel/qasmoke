@@ -147,6 +147,8 @@ Case-level thresholds use a `0..1` score. Exact normalized matches score `1`, co
 - optional `regression` block when `--baseline` is supplied
 - fixture provenance copied from the pack
 
+A baseline must be a JSON report whose `score` is a finite number from `0` through `1`, inclusive. Invalid or out-of-range baseline scores stop the run with a baseline-specific diagnostic and a nonzero exit status.
+
 Use `--format markdown` when an agent needs a paste-ready PR comment or release-candidate evidence block.
 
 ## Release Verification

@@ -10,6 +10,10 @@ baseline comparison before adding it to CI.
 - `--max-score-drop 0` keeps the demo strict: any score drop should fail.
 - The committed `fixture` provider keeps the flow local and deterministic.
 
+The baseline file must contain a numeric `score` between `0` and `1`, inclusive.
+qasmoke rejects missing, non-numeric, non-finite, or out-of-range scores before
+performing the comparison.
+
 ## Run it
 
 ```sh
