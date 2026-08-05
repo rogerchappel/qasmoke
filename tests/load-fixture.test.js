@@ -69,6 +69,36 @@ test('runSuite compares against a baseline report', async () => {
   });
 });
 
+test('runSuite accepts baseline score boundaries', async () => {
+  for (const score of [0, 1]) {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-baseline-boundary-'));
+    const baselinePath = path.join(tempDir, 'baseline.json');
+    await writeFile(baselinePath, JSON.stringify({ score }), 'utf8');
+
+    const report = await runSuite({
+      fixturePath: 'fixtures/basic',
+      provider: createFixtureProvider(),
+      baselinePath
+    });
+
+    assert.equal(report.regression.baselineScore, score);
+  }
+});
+
+test('runSuite rejects invalid baseline scores', async () => {
+  for (const score of [-0.1, 1.1, '0.5', null]) {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-invalid-baseline-'));
+    const baselinePath = path.join(tempDir, 'baseline.json');
+    await writeFile(baselinePath, JSON.stringify({ score }), 'utf8');
+
+    await assert.rejects(() => runSuite({
+      fixturePath: 'fixtures/basic',
+      provider: createFixtureProvider(),
+      baselinePath
+    }), /Baseline report at .* score must be a finite number between 0 and 1/);
+  }
+});
+
 test('runSuite fails when regression exceeds the allowed drop', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-regression-'));
   const packDir = path.join(tempDir, 'pack');
