@@ -18,8 +18,8 @@ async function compareBaseline(options: {
   assertThreshold('maxScoreDrop', options.allowedDrop);
   const resolvedBaseline = path.resolve(options.baselinePath);
   const parsed = JSON.parse(await readFile(resolvedBaseline, 'utf8')) as Partial<SuiteReport>;
-  if (typeof parsed.score !== 'number' || !Number.isFinite(parsed.score)) {
-    throw new Error(`Baseline report at ${resolvedBaseline} is missing numeric score`);
+  if (typeof parsed.score !== 'number' || !Number.isFinite(parsed.score) || parsed.score < 0 || parsed.score > 1) {
+    throw new Error(`Baseline report at ${resolvedBaseline} score must be a finite number between 0 and 1`);
   }
 
   const scoreDelta = Number((options.currentScore - parsed.score).toFixed(4));

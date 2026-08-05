@@ -27,6 +27,22 @@ test('run exit status follows the suite threshold result', async () => {
   assert.equal(result.status, 0);
 });
 
+test('run reports invalid baseline scores and exits nonzero', async () => {
+  for (const score of [-0.1, 1.1, 'not-a-number']) {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-cli-baseline-'));
+    const baselinePath = path.join(tempDir, 'baseline.json');
+    await writeFile(baselinePath, JSON.stringify({ score }), 'utf8');
+
+    const result = spawnSync(process.execPath, [
+      'dist/cli.js', 'run', 'fixtures/basic', '--baseline', baselinePath
+    ], { encoding: 'utf8' });
+
+    assert.notEqual(result.status, 0);
+    assert.equal(result.stdout, '');
+    assert.match(result.stderr, /^qasmoke error: Baseline report at .* score must be a finite number between 0 and 1\n$/);
+  }
+});
+
 const invalidInvocations = [
   ['run', 'fixtures/basic', '--format'],
   ['run', 'fixtures/basic', '--provider'],
