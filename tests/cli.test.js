@@ -43,6 +43,29 @@ test('run reports invalid baseline scores and exits nonzero', async () => {
   }
 });
 
+test('run rejects malformed fixtures without reporting PASS or formatter errors', async () => {
+  const malformedCases = [
+    { id: 'blank-expected', prompt: 'p', expected: '' },
+    { id: 'empty-expected', prompt: 'p', expected: [] },
+    { id: 'bad-tags', prompt: 'p', expected: 'x', tags: 'not-an-array' }
+  ];
+
+  for (const fixtureCase of malformedCases) {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-cli-fixture-'));
+    const packPath = path.join(tempDir, 'pack.json');
+    await writeFile(packPath, JSON.stringify({ name: 'invalid', version: '1.0.0', cases: [fixtureCase] }));
+    const result = spawnSync(process.execPath, [
+      'dist/cli.js', 'run', packPath, '--provider', 'fixture', '--format', 'markdown'
+    ], { encoding: 'utf8' });
+
+    assert.notEqual(result.status, 0);
+    assert.equal(result.stdout, '');
+    assert.match(result.stderr, new RegExp(`Fixture case "${fixtureCase.id}"`));
+    assert.doesNotMatch(result.stderr, /TypeError/);
+    assert.doesNotMatch(result.stderr, /PASS/);
+  }
+});
+
 const invalidInvocations = [
   ['run', 'fixtures/basic', '--format'],
   ['run', 'fixtures/basic', '--provider'],
