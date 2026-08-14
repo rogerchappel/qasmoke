@@ -90,6 +90,10 @@ CLI usage (including unknown, duplicate, conflicting, or value-less options) are
 rejected before a suite or generator runs. Usage errors and failed suites exit
 with a nonzero status and print a diagnostic to stderr.
 
+`--format` accepts `json` (the default), `summary`, `jsonl`, or `markdown`.
+Unsupported formats are rejected before the suite runs or an `--output` report
+is created.
+
 Compare a run against a previous JSON report:
 
 ```bash
