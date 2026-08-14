@@ -188,6 +188,25 @@ test('loadFixturePack rejects duplicate case ids', async () => {
   await assert.rejects(() => loadFixturePack(tempDir), /Duplicate fixture case id/);
 });
 
+test('loadFixturePack rejects malformed case values with case-specific diagnostics', async () => {
+  const invalidCases = [
+    [{ id: 'blank-string', prompt: 'p', expected: '  ' }, /Fixture case "blank-string" expected must be/],
+    [{ id: 'empty-array', prompt: 'p', expected: [] }, /Fixture case "empty-array" expected must be/],
+    [{ id: 'blank-entry', prompt: 'p', expected: ['valid', ''] }, /Fixture case "blank-entry" expected must be/],
+    [{ id: 'bad-tags', prompt: 'p', expected: 'x', tags: 'smoke' }, /Fixture case "bad-tags" tags must be an array/],
+    [{ id: 'blank-tag', prompt: 'p', expected: 'x', tags: [' '] }, /Fixture case "blank-tag" tags must be an array/],
+    [{ id: 'bad-metadata', prompt: 'p', expected: 'x', metadata: [] }, /Fixture case "bad-metadata" metadata must be an object/]
+  ];
+
+  for (const [fixtureCase, diagnostic] of invalidCases) {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-invalid-case-'));
+    await writeFile(path.join(tempDir, 'pack.json'), JSON.stringify({
+      name: 'invalid', version: '1.0.0', cases: [fixtureCase]
+    }));
+    await assert.rejects(() => loadFixturePack(tempDir), diagnostic);
+  }
+});
+
 test('scoreCase supports regex matchers', () => {
   const result = scoreCase({ id: 'regex', prompt: 'p', expected: 'build\\s+passed', matcher: 'regex' }, 'Build PASSED in 2s');
   assert.equal(result.score, 1);
