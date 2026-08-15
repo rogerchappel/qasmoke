@@ -159,6 +159,7 @@ npm run build
 npm test
 npm run smoke
 npm run package:smoke
+npm run version:smoke
 npm run release:check
 ```
 
@@ -229,10 +230,12 @@ npm run release:check
 
 ### Publishing a release
 
-After `package.json` contains the intended version, create and push the matching
-`vX.Y.Z` tag. The Release workflow verifies that the immutable tag checkout and
-package version agree, runs `npm run release:check`, publishes to npm with
-provenance and public access, and creates the GitHub release.
+`package.json` is the single source of truth for the release version, including
+the value reported by `qasmoke --version`. Set its `version` to the intended
+release before creating and pushing the matching `vX.Y.Z` tag. The Release
+workflow verifies that the immutable tag checkout and package version agree,
+runs `npm run release:check`, publishes to npm with provenance and public access,
+and creates the GitHub release.
 
 If npm publication failed after a GitHub release was created, run the Release
 workflow manually with that existing tag (for example `v0.1.0`). Recovery checks
