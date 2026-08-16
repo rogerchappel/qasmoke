@@ -7,6 +7,14 @@ import { generatePack } from './core/generate-pack.js';
 import { formatJsonLines, formatMarkdown, formatSummary } from './core/format-report.js';
 import { loadFixturePack } from './core/load-fixture.js';
 
+async function packageVersion(): Promise<string> {
+  const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')) as { version?: unknown };
+  if (typeof manifest.version !== 'string' || manifest.version.length === 0) {
+    throw new Error('package.json must contain a non-empty version');
+  }
+  return manifest.version;
+}
+
 function printHelp(): void {
   console.log(`qasmoke\n\nUsage:\n  qasmoke run <fixturePath> [--provider fixture] [--output report.json] [--threshold 1] [--case-threshold 1] [--suite-threshold 1] [--baseline report.json] [--max-score-drop 0] [--format json|summary|jsonl|markdown]\n  qasmoke inspect <fixturePath>\n  qasmoke generate <promptsFile> [--name smoke-pack] [--out fixtures/generated] [--source note]\n\nThresholds:\n  --case-threshold   Minimum score for each case to count as passed (default: 1)\n  --suite-threshold  Minimum fraction of passed cases for the suite to pass (default: 1)\n  Threshold values must be finite numbers from 0 through 1.\n\nExit behavior:\n  Invalid usage and failed suites exit nonzero; usage diagnostics are written to stderr.\n\nSafety:\n  - local-first only\n  - no hidden network calls\n  - fixture provider is deterministic for CI smoke checks\n`);
 }
@@ -57,7 +65,7 @@ async function main(): Promise<void> {
   }
 
   if (command === '--version' || command === '-v') {
-    console.log('0.1.0');
+    console.log(await packageVersion());
     return;
   }
 
