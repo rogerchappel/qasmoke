@@ -102,6 +102,10 @@ qasmoke run fixtures/basic --provider fixture --baseline .tmp/report.json --max-
 qasmoke generate fixtures/prompts.txt --name starter-pack --out fixtures/generated --source "brainstorm session"
 ```
 
+The prompts file must contain at least one non-blank prompt. Empty and
+whitespace-only files are rejected before the output directory or `pack.json`
+is created.
+
 ## Fixture format
 
 Each pack lives in `pack.json`:
