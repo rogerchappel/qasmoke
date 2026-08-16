@@ -116,6 +116,9 @@ async function main(): Promise<void> {
       .split(/\r?\n/)
       .map((line) => line.trim())
       .filter(Boolean);
+    if (prompts.length === 0) {
+      throw new Error('Prompts file must contain at least one non-blank prompt');
+    }
     const outDir = options.get('--out') ?? 'fixtures/generated';
     const name = options.get('--name') ?? 'smoke-pack';
     const source = options.get('--source');
