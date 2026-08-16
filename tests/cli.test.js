@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -64,6 +65,42 @@ test('run rejects malformed fixtures without reporting PASS or formatter errors'
     assert.doesNotMatch(result.stderr, /TypeError/);
     assert.doesNotMatch(result.stderr, /PASS/);
   }
+});
+
+test('generate rejects prompt sources without non-blank prompts before creating output', async () => {
+  for (const contents of ['', '  \n\t\n   ']) {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-cli-empty-prompts-'));
+    const promptsPath = path.join(tempDir, 'prompts.txt');
+    const outputPath = path.join(tempDir, 'generated');
+    await writeFile(promptsPath, contents, 'utf8');
+
+    const result = spawnSync(process.execPath, [
+      'dist/cli.js', 'generate', promptsPath, '--out', outputPath
+    ], { encoding: 'utf8' });
+
+    assert.notEqual(result.status, 0);
+    assert.equal(result.stdout, '');
+    assert.equal(result.stderr, 'qasmoke error: Prompts file must contain at least one non-blank prompt\n');
+    assert.equal(existsSync(outputPath), false);
+    assert.equal(existsSync(path.join(outputPath, 'pack.json')), false);
+  }
+});
+
+test('generate creates a pack from a non-empty prompts source', async () => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-cli-prompts-'));
+  const promptsPath = path.join(tempDir, 'prompts.txt');
+  const outputPath = path.join(tempDir, 'generated');
+  await writeFile(promptsPath, '\n First prompt \n\nSecond prompt\n', 'utf8');
+
+  const result = spawnSync(process.execPath, [
+    'dist/cli.js', 'generate', promptsPath, '--out', outputPath
+  ], { encoding: 'utf8' });
+  const report = JSON.parse(result.stdout);
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stderr, '');
+  assert.equal(report.cases, 2);
+  assert.equal(existsSync(path.join(outputPath, 'pack.json')), true);
 });
 
 const invalidInvocations = [
