@@ -15,6 +15,9 @@ async function packageVersion(): Promise<string> {
   return manifest.version;
 }
 
+const supportedFormats = ['json', 'summary', 'jsonl', 'markdown'] as const;
+type OutputFormat = typeof supportedFormats[number];
+
 function printHelp(): void {
   console.log(`qasmoke\n\nUsage:\n  qasmoke run <fixturePath> [--provider fixture] [--output report.json] [--threshold 1] [--case-threshold 1] [--suite-threshold 1] [--baseline report.json] [--max-score-drop 0] [--format json|summary|jsonl|markdown]\n  qasmoke inspect <fixturePath>\n  qasmoke generate <promptsFile> [--name smoke-pack] [--out fixtures/generated] [--source note]\n\nThresholds:\n  --case-threshold   Minimum score for each case to count as passed (default: 1)\n  --suite-threshold  Minimum fraction of passed cases for the suite to pass (default: 1)\n  Threshold values must be finite numbers from 0 through 1.\n\nExit behavior:\n  Invalid usage and failed suites exit nonzero; usage diagnostics are written to stderr.\n\nSafety:\n  - local-first only\n  - no hidden network calls\n  - fixture provider is deterministic for CI smoke checks\n`);
 }
@@ -41,6 +44,14 @@ function numberOption(options: Map<string, string>, name: string, fallback: numb
     throw new Error(`${name} must be a finite number between 0 and 1`);
   }
   return value;
+}
+
+function formatOption(options: Map<string, string>): OutputFormat {
+  const format = options.get('--format') ?? 'json';
+  if (!supportedFormats.includes(format as OutputFormat)) {
+    throw new Error(`Unsupported format: ${format}. Expected one of: ${supportedFormats.join(', ')}`);
+  }
+  return format as OutputFormat;
 }
 
 async function inspectFixture(fixturePath: string): Promise<void> {
@@ -81,6 +92,7 @@ async function main(): Promise<void> {
       throw new Error(`Unsupported provider: ${providerName}. V1 ships only the deterministic fixture provider.`);
     }
     const output = options.get('--output');
+    const format = formatOption(options);
     const caseThresholdName = options.has('--case-threshold') ? '--case-threshold' : '--threshold';
     const report = await runSuite({
       fixturePath,
@@ -91,7 +103,6 @@ async function main(): Promise<void> {
       baselinePath: options.get('--baseline'),
       maxScoreDrop: numberOption(options, '--max-score-drop', 0)
     });
-    const format = options.get('--format') ?? 'json';
     if (format === 'summary') {
       console.log(formatSummary(report));
     } else if (format === 'jsonl') {
@@ -100,8 +111,6 @@ async function main(): Promise<void> {
       console.log(formatMarkdown(report));
     } else if (format === 'json') {
       console.log(JSON.stringify(report, null, 2));
-    } else {
-      throw new Error(`Unsupported format: ${format}`);
     }
     process.exitCode = report.pass ? 0 : 1;
     return;

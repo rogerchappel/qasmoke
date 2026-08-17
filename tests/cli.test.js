@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
+import { access, mkdir, mkdtemp, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -101,6 +101,35 @@ test('generate creates a pack from a non-empty prompts source', async () => {
   assert.equal(result.stderr, '');
   assert.equal(report.cases, 2);
   assert.equal(existsSync(path.join(outputPath, 'pack.json')), true);
+});
+
+test('run rejects an unsupported format before running or writing a report', async () => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-cli-format-'));
+  const reportPath = path.join(tempDir, 'report.json');
+  const result = spawnSync(process.execPath, [
+    'dist/cli.js', 'run', 'fixtures/basic', '--provider', 'fixture',
+    '--output', reportPath, '--format', 'xml'
+  ], { encoding: 'utf8' });
+
+  assert.notEqual(result.status, 0);
+  assert.equal(result.stdout, '');
+  assert.equal(
+    result.stderr,
+    'qasmoke error: Unsupported format: xml. Expected one of: json, summary, jsonl, markdown\n'
+  );
+  await assert.rejects(access(reportPath), { code: 'ENOENT' });
+});
+
+test('run accepts every documented output format', () => {
+  for (const format of ['json', 'summary', 'jsonl', 'markdown']) {
+    const result = spawnSync(process.execPath, [
+      'dist/cli.js', 'run', 'fixtures/basic', '--provider', 'fixture', '--format', format
+    ], { encoding: 'utf8' });
+
+    assert.equal(result.status, 0, `${format}: ${result.stderr}`);
+    assert.notEqual(result.stdout, '', format);
+    assert.equal(result.stderr, '', format);
+  }
 });
 
 const invalidInvocations = [
