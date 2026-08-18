@@ -171,7 +171,10 @@ npm run version:smoke
 npm run release:check
 ```
 
-The npm package includes `dist`, `fixtures`, `docs`, and maintainer policy files so the published quickstart can inspect and run the bundled deterministic packs.
+The package tarball includes `dist`, `fixtures`, `docs`, and maintainer policy
+files. Before npm publication, clone/source installs and `npm pack` tarballs can
+run the quickstart and library examples; the bare `npm install qasmoke` and
+`import ... from 'qasmoke'` paths require the version to exist in npm.
 
 ## Library use
 
@@ -232,9 +235,10 @@ Run the same checks that CI uses before opening a release PR:
 ```sh
 npm run release:readiness
 npm run release:check
+npm run registry:availability
 ```
 
-`release:readiness` validates repository metadata, the package files allowlist, package smoke coverage, and CI placeholder cleanup. `release:check` runs that readiness validator plus the project build, test, smoke, and package dry-run checks.
+`release:readiness` validates repository metadata, the package files allowlist, package smoke coverage, and CI placeholder cleanup. `release:check` runs that readiness validator plus the project build, test, smoke, and package dry-run checks. `registry:availability` performs a read-only npm lookup and prints `available` or `absent`; authentication, network, and malformed-response failures stop the check instead of being mistaken for an unpublished version.
 
 ### Publishing a release
 
@@ -248,4 +252,10 @@ and creates the GitHub release.
 If npm publication failed after a GitHub release was created, run the Release
 workflow manually with that existing tag (for example `v0.1.0`). Recovery checks
 out and verifies the tag, requires its GitHub release to exist, publishes only
-when that exact npm version is absent, and never creates a second release.
+when that exact npm version is confirmed absent, and never creates a second
+release. Registry errors fail the workflow before publication. This recovery is
+a maintainer-authorized action because it uses npm trusted publishing; the
+readiness and availability commands themselves never publish or create a release.
+After recovery succeeds, verify the public result with
+`npm view qasmoke@0.1.0 version`; it must print `0.1.0` before treating the bare
+npm install and library import examples as registry-backed paths.

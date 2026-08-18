@@ -55,10 +55,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if npm view "qasmoke@$PACKAGE_VERSION" version >/dev/null 2>&1; then
+          REGISTRY_STATUS="$(npm run --silent registry:availability)"
+          if [ "$REGISTRY_STATUS" = available ]; then
             echo "qasmoke@$PACKAGE_VERSION already exists; skipping npm publish."
-          else
+          elif [ "$REGISTRY_STATUS" = absent ]; then
             npm publish --provenance --access public
+          else
+            echo "Unexpected registry status: $REGISTRY_STATUS" >&2
+            exit 1
           fi
       - name: Generate release notes
         if: github.event_name != 'workflow_dispatch'
