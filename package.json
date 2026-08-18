@@ -38,6 +38,7 @@
     "smoke:fixture": "node dist/cli.js run fixtures/basic --provider fixture --format summary",
     "smoke:failure": "node dist/cli.js run fixtures/failing --provider fixture --format summary",
     "package:smoke": "node scripts/package-smoke.mjs",
+    "registry:availability": "node scripts/check-registry-availability.mjs",
     "release:readiness": "node scripts/validate-release-readiness.mjs",
     "version:smoke": "node scripts/version-smoke.mjs"
   },
