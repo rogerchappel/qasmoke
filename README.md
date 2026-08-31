@@ -30,6 +30,10 @@ Or run locally without linking:
 node dist/cli.js --help
 ```
 
+Use `-h` or `--help` to print usage successfully. Invoking `qasmoke`
+without a command is invalid usage: it exits nonzero and prints a concise
+command summary to stderr.
+
 ## Quickstart
 
 ```bash
