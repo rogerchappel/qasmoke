@@ -6,6 +6,30 @@ import { access, mkdir, mkdtemp, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+function runCli(args) {
+  return spawnSync(process.execPath, ['dist/cli.js', ...args], { encoding: 'utf8' });
+}
+
+test('CLI rejects missing commands with actionable stderr help', () => {
+  const result = runCli([]);
+
+  assert.notEqual(result.status, 0);
+  assert.equal(result.stdout, '');
+  assert.match(result.stderr, /^qasmoke error: Missing command\./);
+  assert.match(result.stderr, /Usage:/);
+  assert.match(result.stderr, /qasmoke run <fixturePath>/);
+});
+
+for (const flag of ['-h', '--help']) {
+  test(`CLI ${flag} prints help successfully`, () => {
+    const result = runCli([flag]);
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /^qasmoke\n\nUsage:/);
+    assert.equal(result.stderr, '');
+  });
+}
+
 test('run exit status follows the suite threshold result', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-cli-threshold-'));
   const packDir = path.join(tempDir, 'pack');
