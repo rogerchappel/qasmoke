@@ -70,7 +70,13 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const command = args[0];
 
-  if (!command || command === '--help' || command === '-h') {
+  if (!command) {
+    console.error('qasmoke error: Missing command. Choose run, inspect, or generate.\n\nUsage:\n  qasmoke run <fixturePath>\n  qasmoke inspect <fixturePath>\n  qasmoke generate <promptsFile>\n\nRun qasmoke --help for all options.');
+    process.exitCode = 1;
+    return;
+  }
+
+  if (command === '--help' || command === '-h') {
     printHelp();
     return;
   }
