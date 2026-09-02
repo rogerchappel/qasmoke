@@ -94,6 +94,10 @@ CLI usage (including unknown, duplicate, conflicting, or value-less options) are
 rejected before a suite or generator runs. Usage errors and failed suites exit
 with a nonzero status and print a diagnostic to stderr.
 
+Every fixture pack must define at least one case. Zero-case packs are rejected
+before inspection, provider execution, or output report creation, even when
+`--suite-threshold 0` is requested.
+
 `--format` accepts `json` (the default), `summary`, `jsonl`, or `markdown`.
 Unsupported formats are rejected before the suite runs or an `--output` report
 is created.
