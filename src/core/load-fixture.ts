@@ -26,6 +26,9 @@ export async function loadFixturePack(inputPath: string): Promise<FixturePack> {
     !isNonBlankString(parsed.version) || !Array.isArray(parsed.cases)) {
     throw new Error(`Invalid fixture pack at ${filePath}`);
   }
+  if (parsed.cases.length === 0) {
+    throw new Error(`Fixture pack must contain at least one case in ${filePath}`);
+  }
 
   const ids = new Set<string>();
   for (const [index, testCase] of parsed.cases.entries()) {
