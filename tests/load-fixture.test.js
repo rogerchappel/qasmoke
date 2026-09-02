@@ -11,6 +11,17 @@ test('loadFixturePack reads a pack directory', async () => {
   assert.equal(pack.cases.length, 2);
 });
 
+test('loadFixturePack rejects an empty case suite with the fixture path', async () => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-empty-suite-'));
+  const packPath = path.join(tempDir, 'pack.json');
+  await writeFile(packPath, JSON.stringify({ name: 'empty', version: '1.0.0', cases: [] }));
+
+  await assert.rejects(
+    () => loadFixturePack(tempDir),
+    new RegExp(`Fixture pack must contain at least one case in ${packPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`)
+  );
+});
+
 test('loadFixturePack accepts threshold boundaries and rejects invalid thresholds', async () => {
   for (const threshold of [0, 1]) {
     const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-valid-'));

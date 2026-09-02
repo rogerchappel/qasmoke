@@ -91,6 +91,25 @@ test('run rejects malformed fixtures without reporting PASS or formatter errors'
   }
 });
 
+test('inspect and run reject zero-case packs before provider or output side effects', async () => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-cli-empty-suite-'));
+  const packPath = path.join(tempDir, 'pack.json');
+  const reportPath = path.join(tempDir, 'report.json');
+  await writeFile(packPath, JSON.stringify({ name: 'empty', version: '1.0.0', cases: [] }));
+
+  for (const args of [
+    ['inspect', packPath],
+    ['run', packPath, '--provider', 'fixture', '--suite-threshold', '0', '--output', reportPath]
+  ]) {
+    const result = runCli(args);
+    assert.notEqual(result.status, 0);
+    assert.equal(result.stdout, '');
+    assert.match(result.stderr, /Fixture pack must contain at least one case in /);
+    assert.match(result.stderr, new RegExp(packPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  await assert.rejects(access(reportPath), { code: 'ENOENT' });
+});
+
 test('generate rejects prompt sources without non-blank prompts before creating output', async () => {
   for (const contents of ['', '  \n\t\n   ']) {
     const tempDir = await mkdtemp(path.join(os.tmpdir(), 'qasmoke-cli-empty-prompts-'));
