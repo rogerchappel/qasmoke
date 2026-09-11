@@ -38,7 +38,7 @@ jobs:
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
           test "$RELEASE_TAG" = "v$PACKAGE_VERSION" || { echo "Tag $RELEASE_TAG does not match package version $PACKAGE_VERSION" >&2; exit 1; }
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_ENV"
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
